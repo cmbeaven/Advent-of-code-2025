@@ -1,13 +1,13 @@
 .PHONY:all
-all: 01a.out
+all: 01.out
 
-01a.out: main.cpp
-	g++ main.cpp -o $@
+01.out: 01.cpp
+	g++ $< -o $@
 
-.PHONY:run
-run: 01a.out
-	./01a.out < input.txt
+.PHONY:01
+01: 01.out
+	./$< < 01.txt
 
-.PHONY:run_short
-run_short: 01a.out
-	./01a.out < shortInput.txt
+.PHONY:01s
+01s: 01.out
+	./$< < 01Short.txt
