@@ -1,5 +1,8 @@
 .PHONY:all
-all: 01.out 02.out
+all: 01.out 02.out 03.out 04.out
+
+.PHONY:run_all
+run_all: 01 02 03 04
 
 .PHONY:clean
 clean:
