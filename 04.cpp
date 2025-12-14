@@ -40,7 +40,6 @@ int main(int argv, char** argc){
         for(int j = 0; j < size.width; ++j){
             if(printFloor.getLocation(i,j) == '@' && accessible(printFloor,i,j)){
                 sum++;
-                printFloor.changeLocation('x',i,j);
             }
             std::cout << printFloor.getLocation(i,j);
         }
@@ -60,13 +59,13 @@ void charMatrix::addRow(std::string_view row){
 char charMatrix::getLocation(int x, int y){
     // check bounds
     if(x < 0)
-        return 0;
+        return '0';
     if(y < 0)
-        return 0;
+        return '0';
     if(y > rowLength)
-        return 0;
+        return '0';
     if(x > matrix.size())
-        return 0;
+        return '0';
     
     return matrix[x][y];
 }
@@ -98,12 +97,13 @@ bool accessible(charMatrix& matrix, int x, int y){
         for(int j = -1; j < 2; ++j){
             if(i == 0 && j == 0)
                 continue;
-            if(matrix.getLocation(x+i, y+j) == '@' || matrix.getLocation(x+i,y+i) == 'x'){
+            if(matrix.getLocation(x+i, y+j) == '@' || matrix.getLocation(x+i,y+j) == 'x'){
                 count++;
                 if(count == 4)
                     return false;
             }
         }
     }
+    matrix.changeLocation('x',x,y);
     return true;
 }
