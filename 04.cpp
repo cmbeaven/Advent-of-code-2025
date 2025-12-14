@@ -26,6 +26,8 @@ class charMatrix{
 
 bool accessible(charMatrix& matrix, int x, int y);
 
+bool cleanup(charMatrix& matrix);
+
 int main(int argv, char** argc){
     charMatrix printFloor;
     while(!std::cin.eof()){
@@ -36,15 +38,17 @@ int main(int argv, char** argc){
     charMatrix::matrixSize_t size = printFloor.getSize();
 
     int sum = 0;
-    for(int i = 0; i < size.height; ++i){
-        for(int j = 0; j < size.width; ++j){
-            if(printFloor.getLocation(i,j) == '@' && accessible(printFloor,i,j)){
-                sum++;
+    do{
+        for(int i = 0; i < size.height; ++i){
+            for(int j = 0; j < size.width; ++j){
+                if(printFloor.getLocation(i,j) == '@' && accessible(printFloor,i,j)){
+                    sum++;
+                }
+                std::cout << printFloor.getLocation(i,j);
             }
-            std::cout << printFloor.getLocation(i,j);
+            std::cout << '\n' << std::flush;
         }
-        std::cout << '\n' << std::flush;
-    }
+    }while(cleanup(printFloor));
     printf("Accessible: %i\n",sum);
     return 0;
 }
@@ -106,4 +110,18 @@ bool accessible(charMatrix& matrix, int x, int y){
     }
     matrix.changeLocation('x',x,y);
     return true;
+}
+
+bool cleanup(charMatrix& matrix){
+    bool rollMoved = false;
+    charMatrix::matrixSize_t size = matrix.getSize();
+    for(int i = 0; i < size.height; ++i){
+        for(int j = 0; j < size.width; ++j){
+            if(matrix.getLocation(i,j) == 'x'){
+                rollMoved = true;
+                matrix.changeLocation('.',i,j);
+            }
+        }
+    }
+    return rollMoved;
 }
