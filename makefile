@@ -1,8 +1,8 @@
 .PHONY:all
-all: 01.out 02.out 03.out 04.out 05.out
+all: 01.out 02.out 03.out 04.out 05.out 06.out 07.out
 
 .PHONY:run_all
-run_all: 01 02 03 04 05
+run_all: 01 02 03 04 05 06 07
 
 .PHONY:clean
 clean:
@@ -67,3 +67,12 @@ clean:
 
 06s: 06.out
 	./$< < 06Short.txt
+
+07.out: 07.cpp
+	g++ $< -o $@
+
+07: 07.out
+	./$< < 07.txt
+
+07s: 07.out
+	./$< < 07Short.txt
