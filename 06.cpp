@@ -117,7 +117,7 @@ long sumEq(std::vector<problem>& ps){
                 printf("%s|%c\n",s.c_str(),s[j]);
                 num.push_back(s[j]);
             }
-            printf("%i|%s\n",num.length(),num.c_str());
+            printf("%zu|%s\n",num.length(),num.c_str());
             p.operands.push_back(std::stoi(num));
         }
         p2Problems.push_back(p);
