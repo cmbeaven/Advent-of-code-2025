@@ -4,6 +4,9 @@
  * Find rectangles in a grid pattern
  */
 
+// TODO: implement green tile detection
+//       implement area with only green tiles
+
 #include <vector>
 #include <string>
 #include <iostream>
