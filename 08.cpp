@@ -12,9 +12,9 @@
 #include <algorithm>
 
 struct pos{
-    int x;
-    int y;
-    int z;
+    long x;
+    long y;
+    long z;
     const bool operator==(const pos& p2){return (this->x == p2.x && this->y == p2.y && this->z == p2.z);}
     const bool operator!=(const pos& p2){return !(this->x == p2.x && this->y == p2.y && this->z == p2.z);}
 };
@@ -48,6 +48,22 @@ int findBox(std::vector<circuit>& v, pos& p){
         }
     }
     return -1;
+}
+
+std::pair<int,int> findLowestDistance(std::vector<std::vector<double>> distances){
+        int b1 = 0;
+        int b2 = 1;
+        double dLowest = distances[0][1];
+        for (int i = 0; i < distances.size(); i++){
+            for(int j = 0; j < i; j++){
+                if(distances[i][j] != 0 && distances[i][j] < dLowest){
+                    b1 = i;
+                    b2 = j;
+                    dLowest = distances[i][j];
+                }
+            }
+        }
+        return std::pair<int,int>(b1,b2);
 }
 
 class distanceGraph{
@@ -99,21 +115,10 @@ int main(){
 
     std::vector<std::pair<int,int>> connections;
     for(int n = 0; n < (boxes.size() == 20 ? 10 : 1000); n++){
-        int b1 = 0;
-        int b2 = 1;
-        double dLowest = distances[0][1];
-        for (int i = 0; i < distances.size(); i++){
-            for(int j = 0; j < i; j++){
-                if(distances[i][j] != 0 && distances[i][j] < dLowest){
-                    b1 = i;
-                    b2 = j;
-                    dLowest = distances[i][j];
-                }
-            }
-        }
-        connections.push_back(std::pair<int,int>(b1,b2));
-        distances[b1][b2] = 0;
-        distances[b2][b1] = 0;
+        std::pair<int,int> nextConnection = findLowestDistance(distances);
+        connections.push_back(nextConnection);
+        distances[nextConnection.first][nextConnection.second] = 0;
+        distances[nextConnection.second][nextConnection.first] = 0;
     }
 
     // for(auto c : connections){
@@ -132,8 +137,8 @@ int main(){
     for(auto c : connections){
         int c1 = findBox(circuits, boxes[c.first]);
         int c2 = findBox(circuits, boxes[c.second]);
-        printf("(%i,%i,%i)-(%i,%i,%i)|",boxes[c.first].x,boxes[c.first].y,boxes[c.first].z,boxes[c.second].x,boxes[c.second].y,boxes[c.second].z);
-        printf("%i,%i\n",c1,c2);
+        // printf("(%i,%i,%i)-(%i,%i,%i)|",boxes[c.first].x,boxes[c.first].y,boxes[c.first].z,boxes[c.second].x,boxes[c.second].y,boxes[c.second].z);
+        // printf("%i,%i\n",c1,c2);
         if(c1 == -1 && c2 == -1){
             circuit temp;
             temp.boxes.push_back(boxes[c.first]);
@@ -153,17 +158,48 @@ int main(){
             }
             circuits[c2].boxes.clear();
             circuits.erase(circuits.begin() + c2);
+        }
         printCircuits(circuits);
         printf("///////////////////////////////////////////\n");
-         }
     }
     std::sort(circuits.begin(), circuits.end(),[](circuit a,circuit b){return a.boxes.size() > b.boxes.size();});
     printCircuits(circuits);
 
     long sum = circuits[0].boxes.size() * circuits[1].boxes.size() * circuits[2].boxes.size();
-    printf("Multiplicand: %li\n",sum);
 
+    std::pair<int,int> lastConnection;
+    while(circuits.size() != 1){
+        lastConnection = findLowestDistance(distances);
 
+        distances[lastConnection.first][lastConnection.second] = 0;
+        distances[lastConnection.second][lastConnection.first] = 0;
+
+        int c1 = findBox(circuits, boxes[lastConnection.first]);
+        int c2 = findBox(circuits, boxes[lastConnection.second]);
+        if(c1 == -1 && c2 == -1){
+            circuit temp;
+            temp.boxes.push_back(boxes[lastConnection.first]);
+            temp.boxes.push_back(boxes[lastConnection.second]);
+            circuits.push_back(temp);
+        }
+        else if(c1 == -1){
+            circuits[c2].boxes.push_back(boxes[lastConnection.first]);
+        }
+        else if(c2 == -1){
+            circuits[c1].boxes.push_back(boxes[lastConnection.second]);
+        }
+        else if(c1 != c2){
+            // need to combine both circuits
+            for(auto box : circuits[c2].boxes){
+                circuits[c1].boxes.push_back(box);
+            }
+            circuits[c2].boxes.clear();
+            circuits.erase(circuits.begin() + c2);
+        printCircuits(circuits);
+        printf("///////////////////////////////////////////\n");
+        }
+    }
+    long long lsum = boxes[lastConnection.first].x * boxes[lastConnection.second].x;
 
 
     // distanceGraph dGraph(boxes);
@@ -174,6 +210,9 @@ int main(){
     //     printCircuits(dGraph.getCircuits());
     //     printf("///////////////////////////////////////////\n");
     // }
+
+    printf("Multiplicand: %li\n",sum);
+    printf("Multiplicand: %lli\n",lsum);
 
     return 0;
 }
